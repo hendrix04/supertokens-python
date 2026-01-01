@@ -11,24 +11,6 @@
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 # License for the specific language governing permissions and limitations
 # under the License.
+from supertokens_python.framework.quart import quart_middleware
 
-from abc import ABC, abstractmethod
-from enum import Enum
-from typing import Any, Union
-
-from supertokens_python.framework.request import BaseRequest
-
-frameworks = ["fastapi", "flask", "django", "quart"]
-
-
-class FrameworkEnum(Enum):
-    FASTAPI = 1
-    FLASK = 2
-    DJANGO = 3
-    QUART = 4
-
-
-class Framework(ABC):
-    @abstractmethod
-    def wrap_request(self, unwrapped: Any) -> Union[BaseRequest, None]:
-        pass
+Middleware = quart_middleware.Middleware

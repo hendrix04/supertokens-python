@@ -11,24 +11,18 @@
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 # License for the specific language governing permissions and limitations
 # under the License.
+from __future__ import annotations
 
-from abc import ABC, abstractmethod
-from enum import Enum
-from typing import Any, Union
+from typing import TYPE_CHECKING
 
-from supertokens_python.framework.request import BaseRequest
+from supertokens_python.framework.types import Framework
 
-frameworks = ["fastapi", "flask", "django", "quart"]
-
-
-class FrameworkEnum(Enum):
-    FASTAPI = 1
-    FLASK = 2
-    DJANGO = 3
-    QUART = 4
+if TYPE_CHECKING:
+    from quart.wrappers import Request
 
 
-class Framework(ABC):
-    @abstractmethod
-    def wrap_request(self, unwrapped: Any) -> Union[BaseRequest, None]:
-        pass
+class QuartFramework(Framework):
+    def wrap_request(self, unwrapped: Request):
+        from supertokens_python.framework.quart.quart_request import QuartRequest
+
+        return QuartRequest(unwrapped)

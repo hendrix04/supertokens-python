@@ -90,18 +90,27 @@ def get_new_core_app_url(
     """
     Create a new application in the ST core, and return a URL to use it.
     """
-    core_url = f"http://{host}:{port}"
+    connection_uri = environ.get("SUPERTOKENS_CORE_CONNECTION_URI")
+    if connection_uri:
+        core_url = connection_uri
+    else:
+        core_url = f"http://{host}:{port}"
 
     if core_config is None:
         core_config = {}
 
     app_id = str(uuid4())
 
+    headers = {
+        "Content-Type": "application/json",
+    }
+    api_key = environ.get("SUPERTOKENS_CORE_API_KEY")
+    if api_key:
+        headers["api-key"] = api_key
+
     response = requests.put(
         f"{core_url}/recipe/multitenancy/app/v2",
-        headers={
-            "Content-Type": "application/json",
-        },
+        headers=headers,
         json={
             "appId": app_id,
             "coreConfig": core_config,
