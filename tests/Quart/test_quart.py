@@ -45,27 +45,37 @@ from tests.utils import (
     create_users,
     get_new_core_app_url,
 )
+from os import environ
 
 
 class QuartTestClient:
     def __init__(self, app):
         self.client = app.test_client()
 
-    async def get(self, url, **kwargs):
+    def _handle_cookies(self, kwargs):
         self.client.cookie_jar.clear()
+        if "cookies" in kwargs:
+            cookies = kwargs.pop("cookies")
+            headers = kwargs.get("headers", {})
+            cookie_header = "; ".join([f"{k}={v}" for k, v in cookies.items()])
+            headers["Cookie"] = cookie_header
+            kwargs["headers"] = headers
+
+    async def get(self, url, **kwargs):
+        self._handle_cookies(kwargs)
         return await self.client.get(url, **kwargs)
 
     async def post(self, url, **kwargs):
-        self.client.cookie_jar.clear()
+        self._handle_cookies(kwargs)
         return await self.client.post(url, **kwargs)
 
     async def options(self, url, **kwargs):
-        self.client.cookie_jar.clear()
+        self._handle_cookies(kwargs)
         return await self.client.options(url, **kwargs)
 
 
 @fixture(scope="function")
-async def driver_config_client() -> QuartTestClient:
+def driver_config_client() -> QuartTestClient:
     app = Quart(__name__)
     Middleware(app)
 
@@ -136,7 +146,10 @@ def apis_override_session(param: APIInterface):
 @mark.asyncio
 async def test_login_refresh(driver_config_client: QuartTestClient):
     init(
-        supertokens_config=SupertokensConfig(get_new_core_app_url()),
+        supertokens_config=SupertokensConfig(
+            get_new_core_app_url(),
+            api_key=environ.get("SUPERTOKENS_CORE_API_KEY"),
+        ),
         app_info=InputAppInfo(
             app_name="SuperTokens Demo",
             api_domain="http://api.supertokens.io",
