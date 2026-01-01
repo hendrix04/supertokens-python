@@ -20,6 +20,12 @@ extras_require = {
             "python-dotenv==1.0.1",
         ]
     ),
+    "quart": (
+        [
+            "quart",
+            "python-dotenv==1.0.1",
+        ]
+    ),
     "flask": (
         [
             "flask-cors",

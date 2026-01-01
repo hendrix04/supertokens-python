@@ -23,3 +23,4 @@ respx>=0.13.0, <1.0.0
 uvicorn==0.32.0
 wasmtime==25.0.0
 -e .
+quart
